@@ -36,12 +36,12 @@ export default function PlayerSelect({ onSelect }: PlayerSelectProps) {
   };
 
   const handlePinDigit = (digit: string) => {
-    if (pin.length >= 4) return;
+    if (pin.length >= 6) return;
     const newPin = pin + digit;
     setPin(newPin);
     setPinError(false);
 
-    if (newPin.length === 4) {
+    if (newPin.length === 6) {
       if (newPin === THIJS_PIN) {
         const prog = loadProgress(pinPlayer!.id);
         onSelect(pinPlayer!.id, pinPlayer!.name, prog);
@@ -143,7 +143,7 @@ export default function PlayerSelect({ onSelect }: PlayerSelectProps) {
             <p className="text-white/60 text-sm mb-6">Voer je pincode in</p>
 
             <div className="flex justify-center gap-3 mb-6">
-              {[0, 1, 2, 3].map(i => (
+              {[0, 1, 2, 3, 4, 5].map(i => (
                 <motion.div
                   key={i}
                   animate={pinError ? { x: [-8, 8, -6, 6, 0] } : {}}
