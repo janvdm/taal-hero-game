@@ -6,7 +6,7 @@ import { getLevelProgress, updateProgressAfterSession, saveProgress } from '../u
 import QuestionCard from './QuestionCard';
 import ResultScreen from './ResultScreen';
 import { playClickSound } from '../utils/sounds';
-import { BookOpen, Shuffle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { BookOpen, ArrowRight, ArrowLeft } from 'lucide-react';
 
 type GameState = 'start' | 'playing' | 'retry' | 'finished';
 
