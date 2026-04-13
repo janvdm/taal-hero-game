@@ -184,7 +184,7 @@ export default function PlayerSelect({ onSelect }: PlayerSelectProps) {
 
             <button
               onClick={() => { playClickSound(); setPinPlayer(null); setPin(''); }}
-              className="text-white/50 text-sm hover:text-white/80 transition-colors"
+              className="w-full text-center text-white/50 text-sm hover:text-white/80 transition-colors py-2"
             >
               ← Terug
             </button>
