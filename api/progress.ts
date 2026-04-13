@@ -1,5 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const kv = process.env['UPSTASH_REDIS_REST_URL']
+  ? new Redis({ url: process.env['UPSTASH_REDIS_REST_URL'], token: process.env['UPSTASH_REDIS_REST_TOKEN'] ?? '' })
+  : null;
 
 type LevelProgress = Record<string, { wrongCount: number; correctCount: number; mastered: boolean }>;
 type AllProgress = Record<string, LevelProgress>;
@@ -22,6 +26,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'GET') {
     try {
+      if (!kv) return res.status(200).json({});
       const progress = await kv.get<AllProgress>(key);
       return res.status(200).json(progress ?? {});
     } catch {
@@ -35,6 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!progress || typeof progress !== 'object') {
         return res.status(400).json({ error: 'Ongeldige voortgang data' });
       }
+      if (!kv) return res.status(200).json({ ok: false, message: 'KV not configured' });
       await kv.set(key, progress);
       return res.status(200).json({ ok: true });
     } catch {

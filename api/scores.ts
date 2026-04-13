@@ -1,5 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const kv = process.env['UPSTASH_REDIS_REST_URL']
+  ? new Redis({ url: process.env['UPSTASH_REDIS_REST_URL'], token: process.env['UPSTASH_REDIS_REST_TOKEN'] ?? '' })
+  : null;
 
 interface ScoreEntry {
   playerName: string;
@@ -25,6 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'GET') {
     try {
+      if (!kv) return res.status(200).json([]);
       const scores = await kv.lrange<ScoreEntry>(key, 0, 19);
       const sorted = [...scores].sort((a, b) => b.score - a.score).slice(0, 10);
       return res.status(200).json(sorted);
@@ -39,6 +44,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!entry || typeof entry.score !== 'number') {
         return res.status(400).json({ error: 'Ongeldige score data' });
       }
+      if (!kv) return res.status(200).json({ ok: false, message: 'KV not configured' });
       await kv.lpush(key, entry);
       await kv.ltrim(key, 0, 99);
       return res.status(200).json({ ok: true });
