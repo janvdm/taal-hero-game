@@ -11,6 +11,7 @@ export interface Level {
   subtitle: string;
   emoji: string;
   color: string;
+  order?: number;
   words: WordEntry[];
 }
 

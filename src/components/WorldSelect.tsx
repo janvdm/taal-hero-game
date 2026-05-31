@@ -34,7 +34,12 @@ export default function WorldSelect({
   useEffect(() => {
     const modules = import.meta.glob<{ default: Level }>('../levels/*.json', { eager: true });
     const loaded = Object.values(modules).map(m => m.default);
-    loaded.sort((a, b) => a.title.localeCompare(b.title));
+    loaded.sort((a, b) => {
+      const orderA = a.order ?? 999;
+      const orderB = b.order ?? 999;
+      if (orderA !== orderB) return orderA - orderB;
+      return a.title.localeCompare(b.title);
+    });
     setLevels(loaded);
   }, []);
 
