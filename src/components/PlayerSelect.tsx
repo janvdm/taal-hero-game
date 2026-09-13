@@ -12,7 +12,7 @@ const PLAYERS: PlayerConfig[] = [
   { id: 'anoniem', name: 'Anoniem', emoji: '🕵️', requiresPin: false },
 ];
 
-const THIJS_PIN = import.meta.env.VITE_THIJS_PIN ?? '1234';
+const THIJS_PIN = (import.meta.env.VITE_THIJS_PIN ?? '123456').trim();
 
 interface PlayerSelectProps {
   onSelect: (id: PlayerId, name: string, progress: AllProgress) => void;
