@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { PlayerId, PlayerConfig, AllProgress } from '../types';
-import { loadProgress } from '../utils/progress';
+import { loadProgress, saveProgress } from '../utils/progress';
 import { playClickSound } from '../utils/sounds';
 
 const PLAYERS: PlayerConfig[] = [
@@ -31,6 +31,7 @@ export default function PlayerSelect({ onSelect }: PlayerSelectProps) {
       setPinError(false);
     } else {
       const prog = loadProgress(player.id);
+      saveProgress(player.id, prog);
       onSelect(player.id, player.name, prog);
     }
   };
@@ -44,6 +45,7 @@ export default function PlayerSelect({ onSelect }: PlayerSelectProps) {
     if (newPin.length === 6) {
       if (newPin === THIJS_PIN) {
         const prog = loadProgress(pinPlayer!.id);
+        saveProgress(pinPlayer!.id, prog);
         onSelect(pinPlayer!.id, pinPlayer!.name, prog);
       } else {
         setPinError(true);

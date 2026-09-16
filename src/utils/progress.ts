@@ -1,14 +1,43 @@
 import type { PlayerId, LevelProgress, AllProgress } from '../types';
+import { KNOWN_WORDS } from '../data/knownWords';
 
 const STORAGE_KEY = 'taal-hero-progress';
+
+export function applyKnownWords(playerId: PlayerId, progress: AllProgress): AllProgress {
+  const playerKnown = KNOWN_WORDS[playerId];
+  if (!playerKnown) return progress;
+
+  let result = progress;
+
+  for (const [levelId, wordIds] of Object.entries(playerKnown)) {
+    const levelProg = { ...(result[levelId] ?? {}) };
+    let changed = false;
+
+    for (const wordId of wordIds) {
+      if (levelProg[wordId]?.mastered) continue;
+      levelProg[wordId] = {
+        ...(levelProg[wordId] ?? { wrongCount: 0, correctCount: 0, mastered: false }),
+        mastered: true,
+      };
+      changed = true;
+    }
+
+    if (changed) {
+      result = { ...result, [levelId]: levelProg };
+    }
+  }
+
+  return result;
+}
 
 export function loadProgress(playerId: PlayerId): AllProgress {
   if (playerId === 'anoniem') return {};
   try {
     const raw = localStorage.getItem(`${STORAGE_KEY}-${playerId}`);
-    return raw ? (JSON.parse(raw) as AllProgress) : {};
+    const progress = raw ? (JSON.parse(raw) as AllProgress) : {};
+    return applyKnownWords(playerId, progress);
   } catch {
-    return {};
+    return applyKnownWords(playerId, {});
   }
 }
 
